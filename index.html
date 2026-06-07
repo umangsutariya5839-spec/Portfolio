@@ -838,6 +838,7 @@ footer span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fil
 </div>
 
 <script>
+
 // NAV
 function TM(){document.getElementById('NL').classList.toggle('open')}
 function CM(){document.getElementById('NL').classList.remove('open')}
@@ -926,10 +927,10 @@ async function CFSend(){
 
 
 // ========== CLOUD DATABASE (JSONBin.io) ==========
-// ⚠️ Replace these two values with your own from jsonbin.io
-const JSONBIN_KEY    = 'YOUR_JSONBIN_MASTER_KEY_HERE';
-const JSONBIN_BIN_ID = 'YOUR_JSONBIN_BIN_ID_HERE';
-const JSONBIN_URL    = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+// ── CLOUD DATABASE (JSONBin.io) — same bin as portfolio site
+const JSONBIN_KEY = '$2a$10$9vizJ5ipCjf4zXfPXpSr1O81mDThNZ3hKLlPTJ.OlMAuLEJkeSCmK';
+const JSONBIN_BIN_ID = '6a2542b5b5be735e4f84a929';
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
 
 const EMPTY_DB = {
   contact_messages : [],
@@ -1253,7 +1254,7 @@ async function delRecord(store, id, reload) {
 
 // ── Admin Dashboard
 function openAdmin() {
-  window.open('https://admindashbord-mmve.vercel.app/', '_blank');
+  window.open('https://admindashbord-mmve.vercel.app', '_blank');
 }
 
 async function loadAdminData() {
@@ -1337,7 +1338,12 @@ function ECQ(id,d){if(EC[id])EC[id].qty=Math.max(0,EC[id].qty+d);EUI()}
 function ETC(){document.getElementById('ECS').classList.toggle('open')}
 function ECO(){document.getElementById('ECS').classList.remove('open');document.getElementById('EMain').style.display='none';document.getElementById('ECOS').style.display='block'}
 function EReset(){EC={};EUI();document.getElementById('ECOS').style.display='none';document.getElementById('EMain').style.display='block';ECAct='all';EFAct='all';ERend()}
+
+
+
+
 </script>
+
 
 <style>
 /* PROJECT MODAL */

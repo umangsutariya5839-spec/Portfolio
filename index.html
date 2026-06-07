@@ -608,7 +608,7 @@ footer span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fil
   <div class="cf-success" id="cf-succ">&#9989; Thanks! Your message has been sent. I'll get back to you soon.</div>
 </div>
 <footer><p>Crafted with &#10084; by <span>Umang Sutarsandhiya</span> &middot; Computer Engineering Student &middot; Gujarat, India</p>  <div style="text-align:center;margin-top:1rem">
-    <a href="admin.html" style="color:rgba(255,255,255,.08);font-size:.7rem;text-decoration:none;letter-spacing:.05em" onmouseover="this.style.color='rgba(124,92,252,.4)'" onmouseout="this.style.color='rgba(255,255,255,.08)'">⚙</a>
+    <a href="https://admindashbord-mmve.vercel.app/" style="color:rgba(255,255,255,.08);font-size:.7rem;text-decoration:none;letter-spacing:.05em" onmouseover="this.style.color='rgba(124,92,252,.4)'" onmouseout="this.style.color='rgba(255,255,255,.08)'">⚙</a>
   </div>
 </footer>
 
@@ -889,68 +889,79 @@ async function CFSend(){
 }
 
 
-// ========== INDEXEDDB DATABASE ==========
-const DB_NAME = 'UmangPortfolioDB';
-const DB_VERSION = 1;
-let db;
+// ========== CLOUD DATABASE (JSONBin.io) ==========
+// Shared across both portfolio and admin sites
+const JSONBIN_KEY = '$2a$10$PLACEHOLDER_REPLACE_WITH_YOUR_KEY';
+const JSONBIN_BIN_ID = 'PLACEHOLDER_REPLACE_WITH_YOUR_BIN_ID';
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
 
-function initDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = e => {
-      const d = e.target.result;
-      // FoodieExpress orders
-      if (!d.objectStoreNames.contains('foodie_orders')) {
-        const s = d.createObjectStore('foodie_orders', { keyPath: 'id', autoIncrement: true });
-        s.createIndex('email', 'email', { unique: false });
-        s.createIndex('date', 'date', { unique: false });
-      }
-      // SwiftRide bookings
-      if (!d.objectStoreNames.contains('swift_bookings')) {
-        const s = d.createObjectStore('swift_bookings', { keyPath: 'id', autoIncrement: true });
-        s.createIndex('pickup', 'pickup', { unique: false });
-      }
-      // GlowSalon appointments
-      if (!d.objectStoreNames.contains('glow_appointments')) {
-        const s = d.createObjectStore('glow_appointments', { keyPath: 'id', autoIncrement: true });
-        s.createIndex('date', 'date', { unique: false });
-      }
-      // Contact form messages
-      if (!d.objectStoreNames.contains('contact_messages')) {
-        const s = d.createObjectStore('contact_messages', { keyPath: 'id', autoIncrement: true });
-        s.createIndex('date', 'date', { unique: false });
-      }
-    };
-    req.onsuccess = e => { db = e.target.result; resolve(db); };
-    req.onerror = e => reject(e.target.error);
-  });
+let _cloudDB = null;
+
+const EMPTY_DB = {
+  foodie_orders: [],
+  swift_bookings: [],
+  glow_appointments: [],
+  contact_messages: []
+};
+
+async function initDB() {
+  try {
+    const res = await fetch(JSONBIN_URL + '/latest', {
+      headers: { 'X-Master-Key': JSONBIN_KEY }
+    });
+    if (!res.ok) throw new Error('fetch failed');
+    const json = await res.json();
+    _cloudDB = json.record || JSON.parse(JSON.stringify(EMPTY_DB));
+    // ensure all stores exist
+    for (const k of Object.keys(EMPTY_DB)) {
+      if (!_cloudDB[k]) _cloudDB[k] = [];
+    }
+  } catch(e) {
+    console.warn('Cloud DB init failed, using local fallback', e);
+    _cloudDB = JSON.parse(JSON.stringify(EMPTY_DB));
+  }
 }
 
-function dbAdd(store, data) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(store, 'readwrite');
-    const req = tx.objectStore(store).add({ ...data, date: new Date().toISOString() });
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
+async function _saveDB() {
+  try {
+    await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': JSONBIN_KEY
+      },
+      body: JSON.stringify(_cloudDB)
+    });
+  } catch(e) {
+    console.warn('Cloud DB save failed', e);
+  }
 }
 
-function dbGetAll(store) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(store, 'readonly');
-    const req = tx.objectStore(store).getAll();
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
+async function dbAdd(store, data) {
+  if (!_cloudDB) await initDB();
+  const arr = _cloudDB[store];
+  const maxId = arr.length ? Math.max(...arr.map(r => r.id || 0)) : 0;
+  const record = { ...data, id: maxId + 1, date: new Date().toISOString() };
+  arr.push(record);
+  await _saveDB();
+  return record.id;
 }
 
-function dbDelete(store, id) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(store, 'readwrite');
-    const req = tx.objectStore(store).delete(id);
-    req.onsuccess = () => resolve();
-    req.onerror = () => reject(req.error);
-  });
+async function dbGetAll(store) {
+  if (!_cloudDB) await initDB();
+  return _cloudDB[store] || [];
+}
+
+async function dbDelete(store, id) {
+  if (!_cloudDB) await initDB();
+  _cloudDB[store] = _cloudDB[store].filter(r => r.id !== id);
+  await _saveDB();
+}
+
+async function dbClear(store) {
+  if (!_cloudDB) await initDB();
+  _cloudDB[store] = [];
+  await _saveDB();
 }
 
 // ========== PROJECT MODALS WITH DB ==========
@@ -1165,9 +1176,8 @@ async function delRecord(store, id, reload) {
 }
 
 // ── Admin Dashboard
-async function openAdmin() {
-  const m = document.getElementById('admin-modal');
-  if (m) { m.style.display='flex'; setTimeout(()=>m.classList.add('pm-open'),10); loadAdminData(); }
+function openAdmin() {
+  window.open('https://admindashbord-mmve.vercel.app/', '_blank');
 }
 
 async function loadAdminData() {
@@ -1192,7 +1202,7 @@ async function loadAdminData() {
 }
 
 // ── Init DB on load
-window.addEventListener('DOMContentLoaded', () => initDB().then(() => console.log('DB ready')));
+window.addEventListener('DOMContentLoaded', () => initDB().then(() => console.log('Cloud DB ready')));
 
 // ========== QR APP ==========
 let QType='url',QInited=false;

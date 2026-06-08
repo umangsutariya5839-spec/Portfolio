@@ -306,7 +306,7 @@ footer span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fil
     <li><a href="#experience" onclick="CM()">Experience</a></li>
     <li><a href="#education" onclick="CM()">Education</a></li>
     <li><a href="#contact" onclick="CM()">Contact</a></li>
-    <li><a href="https://admindashbord-mmve.vercel.app/" onclick="OAM();return false;">Admin</a></li>
+    <li><a href="Admin.html" onclick="OAM();return false;">Admin</a></li>
   </ul>
   <button class="hbg" onclick="TM()" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
@@ -585,15 +585,10 @@ footer span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fil
 
 
 <section id="contact">
-  <p class="slbl reveal">Reach Out</p>
-  <h2 class="stitle reveal">Let's <span>Connect</span></h2>
-  <p class="sdesc reveal">Open to internships, freelance work, and full-time opportunities!</p>
-  <div class="cgrid">
-    <a href="mailto:umangsutariya5839@gmail.com" class="cc reveal"><div class="ci rd">&#128231;</div><div><div class="clbl">Email</div><div class="cval">umangsutariya5839@gmail.com</div></div></a>
-    <a href="tel:+919429684634" class="cc reveal"><div class="ci gr">&#128241;</div><div><div class="clbl">Phone</div><div class="cval">+91 94296 84634</div></div></a>
-    <a href="https://www.linkedin.com/in/umang-sutarsandhiya-a1138a384/" target="_blank" rel="noopener" class="cc reveal"><div class="ci bl">&#128188;</div><div><div class="clbl">LinkedIn</div><div class="cval">umang-sutarsandhiya</div></div></a>
-    <a href="https://github.com/umangsutariya5839-spec" target="_blank" rel="noopener" class="cc reveal"><div class="ci pu">&#128025;</div><div><div class="clbl">GitHub</div><div class="cval">umangsutariya</div></div></a>
-  </div>
+  <p class="slbl reveal" id="contact-pretitle">Reach Out</p>
+  <h2 class="stitle reveal" id="contact-title">Let's <span>Connect</span></h2>
+  <p class="sdesc reveal" id="contact-desc">Open to internships, freelance work, and full-time opportunities!</p>
+  <div class="cgrid" id="contact-grid"></div>
 </section>
 
 
@@ -612,7 +607,7 @@ footer span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fil
 @media(max-width:600px){.cf-grid{grid-template-columns:1fr}}
 </style>
 
-<div class="cf reveal">
+<form id="contact-form" class="cf reveal" onsubmit="return CFSend(event)">
   <p class="slbl" style="margin-bottom:.4rem">Send a Message</p>
   <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.4rem;color:#fff;margin-bottom:1.5rem">Contact <span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Form</span></h3>
   <div class="cf-grid">
@@ -637,12 +632,12 @@ footer span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fil
       <textarea id="cf-msg" placeholder="Tell me about your project or opportunity..."></textarea>
     </div>
   </div>
-  <button class="cf-btn" onclick="CFSend()">
+  <button class="cf-btn" type="submit">
     <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     Send Message
   </button>
   <div class="cf-success" id="cf-succ">&#9989; Thanks! Your message has been sent. I'll get back to you soon.</div>
-</div>
+</form>
 <footer><p>Crafted with &#10084; by <span>Umang Sutarsandhiya</span> &middot; Computer Engineering Student &middot; Gujarat, India</p>  <div style="text-align:center;margin-top:1rem">
     <a href="https://admindashbord-mmve.vercel.app/" style="color:rgba(255,255,255,.08);font-size:.7rem;text-decoration:none;letter-spacing:.05em" onmouseover="this.style.color='rgba(124,92,252,.4)'" onmouseout="this.style.color='rgba(255,255,255,.08)'">⚙</a>
   </div>
@@ -909,21 +904,77 @@ function SReset(){SSEL=null;SSLOT=null;document.getElementById('SSucc').style.di
 
 
 // ========== CONTACT FORM ==========
-async function CFSend(){
-  const n=document.getElementById("cf-name").value.trim();
-  const e=document.getElementById("cf-email").value.trim();
-  const p=document.getElementById("cf-phone").value.trim();
-  const subj=document.getElementById("cf-subject").value.trim();
-  const m=document.getElementById("cf-msg").value.trim();
-  if(!n||!e||!m){alert("Please fill in your name, email, and message!");return;}
-  await dbAdd("contact_messages",{name:n,email:e,phone:p,subject:subj,message:m});
-  document.getElementById("cf-succ").style.display="block";
-  document.getElementById("cf-name").value="";
-  document.getElementById("cf-email").value="";
-  document.getElementById("cf-phone").value="";
-  document.getElementById("cf-subject").value="";
-  document.getElementById("cf-msg").value="";
+const WHATSAPP_NUMBER = '919429684634';
+
+function CFSend(event){
+  if(event) event.preventDefault();
+  const n = document.getElementById("cf-name").value.trim();
+  const e = document.getElementById("cf-email").value.trim();
+  const p = document.getElementById("cf-phone").value.trim();
+  const subj = document.getElementById("cf-subject").value.trim();
+  const m = document.getElementById("cf-msg").value.trim();
+  if(!n || !e || !m){
+    alert("Please fill in your name, email, and message!");
+    return false;
+  }
+
+  const waText = `Hello Umang,\n\nMy name is ${n}.\nEmail: ${e}${p ? `\nPhone: ${p}` : ''}${subj ? `\nSubject: ${subj}` : ''}\n\nMessage:\n${m}`;
+  const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waText)}`;
+
+  const succ = document.getElementById("cf-succ");
+  succ.textContent = '✅ Opening WhatsApp with your message...';
+  succ.style.display = "block";
+  clearTimeout(window._cfSuccessTimeout);
+  window._cfSuccessTimeout = setTimeout(() => succ.style.display = "none", 5000);
+
+  document.getElementById("cf-name").value = "";
+  document.getElementById("cf-email").value = "";
+  document.getElementById("cf-phone").value = "";
+  document.getElementById("cf-subject").value = "";
+  document.getElementById("cf-msg").value = "";
+
+  setTimeout(() => { window.open(whatsappLink, '_blank'); }, 150);
+  return false;
 }
+
+const CONTACT_PAGE_DATA = {
+  pretitle: 'Reach Out',
+  title: `Let's <span>Connect</span>`,
+  description: 'Open to internships, freelance work, and full-time opportunities!',
+  cards: [
+    {href:'https://wa.me/919429684634', icon:'💬', color:'gr', label:'WhatsApp', value:'+91 94296 84634', target:true},
+  {href:'mailto:umangsutariya5839@gmail.com', icon:'✉️', color:'rd', label:'Email', value:'umangsutariya5839@gmail.com'},
+  {href:'tel:+919429684634', icon:'📱', color:'gr', label:'Phone', value:'+91 94296 84634'},
+  {href:'https://www.linkedin.com/in/umang-sutarsandhiya-a1138a384/', icon:'💼', color:'bl', label:'LinkedIn', value:'umangsutarsandhiya', target:true},
+    {href:'https://github.com/umangsutariya5839-spec', icon:'🐙', color:'pu', label:'GitHub', value:'umangsutariya', target:true}
+  ]
+};
+
+function renderContactCards() {
+  const grid = document.getElementById('contact-grid');
+  if (!grid) return;
+  grid.innerHTML = CONTACT_PAGE_DATA.cards.map(card =>
+    `<a href="${card.href}" class="cc reveal" ${card.target ? 'target="_blank" rel="noopener"' : ''}>
+      <div class="ci ${card.color}">${card.icon}</div>
+      <div><div class="clbl">${card.label}</div><div class="cval">${card.value}</div></div>
+    </a>`
+  ).join('');
+}
+
+function initContactPage() {
+  const pre = document.getElementById('contact-pretitle');
+  const title = document.getElementById('contact-title');
+  const desc = document.getElementById('contact-desc');
+  if (pre) pre.textContent = CONTACT_PAGE_DATA.pretitle;
+  if (title) title.innerHTML = CONTACT_PAGE_DATA.title;
+  if (desc) desc.textContent = CONTACT_PAGE_DATA.description;
+  renderContactCards();
+  document.querySelectorAll('#contact-form input, #contact-form textarea').forEach(el => {
+    el.addEventListener('input', () => document.getElementById('cf-succ').style.display = 'none');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initContactPage);
 
 
 // ========== CLOUD DATABASE (JSONBin.io) ==========
@@ -1254,28 +1305,21 @@ async function delRecord(store, id, reload) {
 
 // ── Admin Dashboard
 function openAdmin() {
-  window.open('https://admindashbord-mmve.vercel.app', '_blank');
+  window.open('https://admindashbord-mmve.vercel.app/', '_blank');
 }
 
 async function loadAdminData() {
-  const [orders, bookings, appts, msgs] = await Promise.all([
+  const [orders, bookings, appts] = await Promise.all([
     dbGetAll('foodie_orders'), dbGetAll('swift_bookings'),
-    dbGetAll('glow_appointments'), dbGetAll('contact_messages')
+    dbGetAll('glow_appointments')
   ]);
   document.getElementById('adm-food-count').textContent = orders.length;
   document.getElementById('adm-ride-count').textContent = bookings.length;
   document.getElementById('adm-salon-count').textContent = appts.length;
-  document.getElementById('adm-msg-count').textContent = msgs.length;
+  document.getElementById('adm-msg-count').textContent = 0;
 
-  // Messages table
   const el = document.getElementById('adm-msgs');
-  if (msgs.length) {
-    el.innerHTML = '<div class="pm-table"><table><thead><tr><th>#</th><th>Name</th><th>Email</th><th>Subject</th><th>Date</th><th></th></tr></thead><tbody>' +
-      msgs.slice(-20).reverse().map(r=>`<tr><td>${r.id}</td><td>${r.name}</td><td>${r.email}</td><td>${r.subject||'—'}</td><td>${r.date?r.date.slice(0,10):'—'}</td><td><button class="pm-del" onclick="delRecord('contact_messages',${r.id},loadAdminData)">✕</button></td></tr>`).join('') +
-      '</tbody></table></div>';
-  } else {
-    el.innerHTML = '<p style="color:var(--muted);font-size:.85rem">No messages yet.</p>';
-  }
+  el.innerHTML = '<p style="color:var(--muted);font-size:.85rem">Contact form submissions are not stored or displayed in the admin dashboard.</p>';
 }
 
 // ── Init DB on load

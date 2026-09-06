@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 
 const links = [
-  { href: "#work", label: "Work" },
-  { href: "#skills", label: "Skills" },
-  { href: "#education", label: "Education" },
-  { href: "#contact", label: "Contact" },
+  { href: "/about", label: "About" },
+  { href: "/work", label: "Work" },
+  { href: "/skills", label: "Skills" },
+  { href: "/experience", label: "Experience" },
+  { href: "/education", label: "Education" },
+  { href: "/work-session", label: "Work Session" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function Nav({ name, resumeUrl }) {
@@ -26,7 +29,7 @@ export default function Nav({ name, resumeUrl }) {
       }`}
     >
       <nav className="shell flex h-16 items-center justify-between gap-4">
-        <a href="#top" className="display text-lg tracking-tight">
+        <a href="/" className="display text-lg tracking-tight">
           {name.split(" ")[0]}
           <span className="text-seam">.</span>
         </a>

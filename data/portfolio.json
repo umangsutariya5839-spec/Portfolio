@@ -1,0 +1,155 @@
+{
+  "profile": {
+    "name": "Umang Sutarsandhiya",
+    "headline": "Computer Engineer building for the web, learning from data.",
+    "intro": "I finished my B.E. in Computer Engineering at Gujarat Technological University in 2026. I build responsive websites with HTML, CSS and JavaScript, work with MySQL, and I spent a month at IBM SkillsBuild pulling answers out of Excel and SQL. I am currently learning Python and looking for a full-time role in web development or data analysis.",
+    "location": "Jepar, Ta. Chuda, Dist. Surendranagar, Gujarat",
+    "email": "umangsutariya5839@gmail.com",
+    "phone": "+91 94296 84634",
+    "github": "https://github.com/umangsutariya5839",
+    "linkedin": "",
+    "resumeUrl": "/resume.pdf",
+    "available": true,
+    "scorecard": [
+      {
+        "label": "Degree",
+        "value": "B.E. Computer Engineering"
+      },
+      {
+        "label": "CGPA",
+        "value": "7.93 / 10"
+      },
+      {
+        "label": "Graduated",
+        "value": "2026, GTU"
+      },
+      {
+        "label": "Softball",
+        "value": "National level, GTU"
+      }
+    ]
+  },
+  "education": [
+    {
+      "id": "be",
+      "qualification": "Bachelor of Engineering, Computer Engineering",
+      "institute": "Gujarat Technological University",
+      "period": "2022 – 2026",
+      "result": "CGPA 7.93 / 10.00",
+      "note": "Four years of core computer engineering with a final-year focus on web development."
+    },
+    {
+      "id": "xii",
+      "qualification": "Class XII, Science",
+      "institute": "Pramukh Swami Vidyalaya, Salangpur",
+      "period": "2021 – 2022",
+      "result": "55.50%, Grade C1",
+      "note": ""
+    },
+    {
+      "id": "x",
+      "qualification": "Class X",
+      "institute": "Pramukh Swami Vidyalaya, Salangpur",
+      "period": "2019 – 2020",
+      "result": "65.83%, Grade B2",
+      "note": ""
+    }
+  ],
+  "projects": [
+    {
+      "id": "portfolio",
+      "title": "Personal portfolio website",
+      "summary": "A responsive single-page portfolio that puts my work, education and contact details in front of a recruiter in under a minute.",
+      "points": [
+        "Built the full layout in HTML, CSS and JavaScript with no framework, so the page loads fast on a phone.",
+        "Sections for about, projects, skills, resume and contact, each reachable from a fixed navigation bar.",
+        "Linked GitHub, LinkedIn and a downloadable resume so anyone reading it can verify the work."
+      ],
+      "stack": [
+        "HTML",
+        "CSS",
+        "JavaScript"
+      ],
+      "live": "https://umangsutariya.vercel.app",
+      "code": "",
+      "year": "2025"
+    },
+    {
+      "id": "ecommerce",
+      "title": "E-commerce website",
+      "summary": "A shopping site where customers browse a product catalogue, filter it, fill a cart and place an order against a MySQL database.",
+      "points": [
+        "Modelled products, categories, carts and orders in MySQL and connected them to the front end.",
+        "Added category browsing, keyword search and product filtering to shorten the path to a product.",
+        "Handled cart updates and order placement, with the layout adapting from desktop down to mobile."
+      ],
+      "stack": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "MySQL"
+      ],
+      "live": "",
+      "code": "",
+      "year": "2025"
+    }
+  ],
+  "skills": [
+    {
+      "group": "Languages",
+      "items": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Python (basic)"
+      ]
+    },
+    {
+      "group": "Databases",
+      "items": [
+        "MySQL",
+        "Oracle Database"
+      ]
+    },
+    {
+      "group": "Testing",
+      "items": [
+        "Manual testing",
+        "Automation testing (basic)"
+      ]
+    },
+    {
+      "group": "Tools",
+      "items": [
+        "VS Code",
+        "IntelliJ IDEA",
+        "Jira",
+        "Git"
+      ]
+    },
+    {
+      "group": "Also learning",
+      "items": [
+        "AWS (basic)",
+        "Linux (basic)"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "id": "ibm",
+      "role": "Data Analysis Intern",
+      "org": "IBM SkillsBuild",
+      "period": "July 2025",
+      "points": [
+        "Cleaned and analysed datasets in Excel, using pivot tables and formulas to summarise them.",
+        "Wrote SQL queries to join tables and answer questions the raw data did not answer directly.",
+        "Presented findings as simple charts that a non-technical reader could follow."
+      ]
+    }
+  ],
+  "beyondWork": {
+    "title": "Softball, national level",
+    "body": "I played softball for Gujarat Technological University and earned a national level certificate. Learning the game taught me the fundamentals first, then strategy, and above all how a team wins together. The same habits carry into how I work on a project."
+  }
+}

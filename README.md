@@ -1,71 +1,84 @@
 # Umang Sutarsandhiya — portfolio
 
-A dynamic portfolio site. Every word on the page comes from one content source, so the site
-can be updated from a browser instead of a code editor.
+A full-stack portfolio: a **Next.js** frontend that reads everything from a **Node.js + Express + PostgreSQL** REST API. Every word on the site lives in the database and can be edited from `/admin` in the browser.
 
-## Run it
-
-```bash
-npm install
-cp .env.example .env.local     # set ADMIN_PASSWORD at minimum
-npm run dev                    # http://localhost:3000
+```
+client/   Next.js 14 site + admin panel      → deploy on Vercel
+server/   Express REST API + PostgreSQL      → deploy on Railway (or Render)
 ```
 
-Without `MONGODB_URI` the site uses `data/portfolio.json` and stores contact messages in
-`data/messages.json`, so the complete frontend and backend work locally without MongoDB.
+## Run it locally
 
-## Turn on the database
+You need Node.js 18+ and PostgreSQL (local, or a free hosted database).
 
-1. Create a free cluster at mongodb.com, add a database user, allow access from anywhere.
-2. Put the connection string in `MONGODB_URI`.
-3. Restart. The first save from `/admin` creates the `content` document; contact messages go
-   into a `messages` collection.
+**1. API**
 
-## Edit the content
+```bash
+cd server
+npm install
+cp .env.example .env          # set DATABASE_URL, ADMIN_PASSWORD, JWT_SECRET
+npm run db:setup              # creates the tables and loads the resume content
+npm run dev                   # http://localhost:4000
+```
 
-Go to `/admin`, enter `ADMIN_PASSWORD`, change anything, press **Save changes**. The home page
-re-reads content on every request, so a refresh shows the edit. When MongoDB is not configured, saves update `data/portfolio.json` directly.
+**2. Website** (in a second terminal)
+
+```bash
+cd client
+npm install
+cp .env.example .env.local    # NEXT_PUBLIC_API_URL=http://localhost:4000
+npm run dev                   # http://localhost:3000
+```
+
+Open `http://localhost:3000/admin` and sign in with `ADMIN_PASSWORD` to edit content.
+
+## API
+
+All responses are JSON. Reads are public; writes need `Authorization: Bearer <token>` from `/api/auth/login`.
+
+| Method | Endpoint | What it does |
+| --- | --- | --- |
+| GET | `/api/health` | API and database status |
+| GET | `/api/portfolio` | Everything the home page needs, in one call |
+| GET / PUT | `/api/profile` | Name, intro, about, links, stats, "beyond the desk" |
+| GET / POST | `/api/projects` | List / add projects |
+| GET / PUT / DELETE | `/api/projects/:id` | One project (GET also accepts the slug) |
+| PUT | `/api/projects/order` | Save a new order: `[3, 1, 2]` |
+| same as projects | `/api/experience`, `/api/education`, `/api/skills` | The other lists |
+| POST | `/api/contact` | Contact form (validated, honeypot, rate-limited) |
+| GET | `/api/messages` | Inbox (admin) |
+| PATCH / DELETE | `/api/messages/:id` | Mark read/unread, delete (admin) |
+| POST | `/api/auth/login` | `{ "password": "…" }` → `{ "token": "…" }`, valid 8 hours |
+
+Tables are in `server/db/schema.sql`; the starting content is in `server/db/seed-data.js`.
+`npm run db:seed` never overwrites existing content; `npm run db:seed -- --force` resets it to the resume.
+
+## Deploy
+
+**API + database on Railway**
+
+1. New project → *Deploy from GitHub repo* → pick this repo, set **Root Directory** to `server`.
+2. Add a **PostgreSQL** database to the same project.
+3. In the API service's Variables, add:
+   - `DATABASE_URL` → reference the Postgres service's `DATABASE_URL`
+   - `ADMIN_PASSWORD` → your admin password
+   - `JWT_SECRET` → a long random string
+   - `CORS_ORIGIN` → your Vercel URL, e.g. `https://umangsutariya.vercel.app`
+4. Set the **Pre-deploy command** to `npm run db:setup`, then deploy and generate a public domain.
+
+**Website on Vercel**
+
+1. Import the repo, set **Root Directory** to `client`.
+2. Add `NEXT_PUBLIC_API_URL` = the Railway API URL (no trailing slash). Deploy.
 
 ## Before it goes live
 
-- [ ] Put the resume PDF at `public/resume.pdf` so the download button works.
-- [ ] Fix the GitHub link. The resume says `github.com/dashboard`, which only works when you
-      are logged in. Your public profile is `github.com/<your-username>`.
-- [ ] Add the LinkedIn URL in `/admin` — the field is empty and the link stays hidden until
-      it is filled.
-- [ ] Add live and code links to the two projects. A recruiter who cannot click through has
-      only your word for it.
-- [ ] Change `ADMIN_PASSWORD` from the example value.
+- [ ] Add your LinkedIn URL in `/admin → Profile`; the icon stays hidden until it's set.
+- [ ] Add a photo URL in `/admin → Profile` (the hero shows your initials until then).
+- [ ] Add GitHub code links and screenshot URLs to projects.
+- [ ] The resume PDF (`client/public/resume.pdf`) still says `github.com/dashboard`; change it to `github.com/umangsutariya5839-spec`.
+- [ ] Use a strong `ADMIN_PASSWORD` and `JWT_SECRET` in production.
 
-## Deploy to Vercel
+## Restyling
 
-```bash
-git init && git add -A && git commit -m "Portfolio"
-git remote add origin https://github.com/<username>/umang-portfolio.git
-git push -u origin main
-```
-
-Import the repo at vercel.com, add `MONGODB_URI`, `MONGODB_DB` and `ADMIN_PASSWORD` under
-Environment Variables, deploy. Note that the file system is read-only on Vercel, so the admin
-panel needs the database there.
-
-## Structure
-
-```
-app/
-  page.js              home page, server-rendered from the content module
-  admin/page.js        password-protected editor
-  api/portfolio/       GET the content, PUT to update it
-  api/contact/         contact form endpoint, with honeypot and rate limit
-  api/auth/            admin cookie session
-components/            one file per section
-data/portfolio.json    the content, and the fallback when no database is set
-lib/content.js         reads MongoDB first, JSON second
-lib/mongodb.js         cached connection for serverless
-```
-
-## Design notes
-
-Pine green and chalk, with a red dashed curve borrowed from the stitching on a softball as the
-only recurring motif. Bricolage Grotesque sets the headings, Source Serif 4 the body. The
-education section is the one timeline on the page, because education is genuinely a sequence.
+Every colour and font is a CSS variable at the top of `client/app/globals.css`. Change them there to re-theme the whole site.
